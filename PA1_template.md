@@ -8,9 +8,6 @@ Before running the code we assume that the working directory is set up correctly
 We start with loading data from the csv file and converting "date" column 
 to a "Date" format.
 
-1. Load the data (i.e. read.csv())
-2. Process/transform the data (if necessary) into a format suitable for your
-analysis
 
 
 ```r
@@ -23,9 +20,6 @@ activity[, 2] <- as.Date(activity[, 2])
 
 
 ### What is mean total number of steps taken per day?
-For this part of the assignment, you can ignore the missing values in the dataset.
-1. Make a histogram of the total number of steps taken each day
-2. Calculate and report the mean and median total number of steps taken per day
 
 
 ```r
@@ -33,22 +27,22 @@ stepsPerDay <- xtabs(steps ~ date, data = activity)
 m <- mean(stepsPerDay)
 med <- median(stepsPerDay)
 
-png(file = "figure/histogram1.png")
+# png(file = 'figure/histogram1.png')
 hist(stepsPerDay, breaks = 20)
-dev.off()
 ```
 
-```
-## pdf 
-##   2
+![plot of chunk histogram: total steps per day](figure/histogram:_total_steps_per_day.png) 
+
+```r
+# dev.off()
 ```
 
 
 The mean of total number of steps taken per day is 1.0766 &times; 10<sup>4</sup> and median is 1.0765 &times; 10<sup>4</sup>.
 
+
 ## What is the average daily activity pattern?
-1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
 
 
 ```r
@@ -56,18 +50,15 @@ library(reshape2)
 m <- melt(activity, id = "interval", variable.name = "steps", na.rm = TRUE)
 d <- dcast(m, interval ~ "steps", mean)
 
-png(file = "figure/averActivity.png")
+# png(file = 'figure/averActivity.png' )
 plot(d[, 1], d[, 2], type = "l", xlab = "5-min interval", ylab = "Average number of steps taken", 
     main = "Average daily activity pattern")
-dev.off()
 ```
 
-```
-## pdf 
-##   2
-```
+![plot of chunk average daily activity pattern](figure/average_daily_activity_pattern.png) 
 
 ```r
+# dev.off()
 
 idx <- which.max(d[, 2])
 ```
@@ -76,14 +67,7 @@ Maximum number of steps (8466.7632 steps) were made in this 5-minute interval: 8
 
 
 ## Imputing missing values
-Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some
-calculations or summaries of the data.
 
-1. Calculate and report the total number of missing values in the dataset
-(i.e. the total number of rows with NAs)
-2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
-4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
 ```r
@@ -104,29 +88,18 @@ completeData[is.na(completeData), 1] <- intervalAver
 
 stepsPerDayCompl <- xtabs(steps ~ date, data = completeData)
 # head(stepsPerDayCompl,20)
-
-png(file = "figure/filled_missing_values.png")
 hist(stepsPerDayCompl, breaks = 20)
-hist(stepsPerDay, breaks = 20)
-dev.off()
 ```
 
-```
-## pdf 
-##   2
-```
+![plot of chunk Imputing missing values](figure/Imputing_missing_values.png) 
 
 ```r
 
-mean(stepsPerDayCompl) == mean(stepsPerDay)
-```
+# png(file='figure/filled_missing_values.png') hist(stepsPerDayCompl, breaks
+# = 20) dev.off()
 
-```
-## [1] FALSE
-```
-
-```r
-# as.vector(stepsPerDay) as.vector(stepsPerDayCompl)
+# mean(stepsPerDayCompl) == mean(stepsPerDay) as.vector(stepsPerDay)
+# as.vector(stepsPerDayCompl)
 rbind(summary(as.vector(stepsPerDay)), summary(as.vector(stepsPerDayCompl)))
 ```
 
@@ -137,18 +110,9 @@ rbind(summary(as.vector(stepsPerDay)), summary(as.vector(stepsPerDayCompl)))
 ```
 
 ```r
-median(stepsPerDayCompl) == median(stepsPerDay)
-```
-
-```
-## 2012-10-28 
-##      FALSE
-```
-
-```r
+# median(stepsPerDayCompl) == median(stepsPerDay)
 
 # boxplot(as.vector(stepsPerDay), as.vector(stepsPerDayCompl))
-
 # sum(as.vector(stepsPerDay)) sum(as.vector(stepsPerDayCompl))
 ```
 
@@ -158,10 +122,6 @@ After filling the missing values new data set has different median (1.1458 &time
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
-
-For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
-1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
-2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was creating using simulated data:
 
 
 
@@ -179,16 +139,7 @@ completeData[isWeekend, "day"] <- "weekend"
 completeData[!isWeekend, "day"] <- "weekday"
 completeData[, "day"] <- as.factor(completeData[, "day"])
 
-# summary(completeData)
-summary(as.factor(completeData$day))
-```
-
-```
-## weekday weekend 
-##   12960    4608
-```
-
-```r
+# summary(completeData) summary(as.factor(completeData$day))
 
 
 # mean steps by 'day'
@@ -217,25 +168,24 @@ library(dplyr)
 bytime <- group_by(completeData, interval, day)
 # summarise(bytime, mean(steps))
 
-
 meanStepsWeekend <- completeData %.% group_by(day, interval) %.% summarise(meansteps = mean(steps)) %.% 
     filter(day == "weekend")
 
 meanStepsWeekday <- completeData %.% group_by(day, interval) %.% summarise(meansteps = mean(steps)) %.% 
     filter(day == "weekday")
 
-png(file = "figure/weekend_vs_weekdays.png")
+# png(file = 'figure/weekend_vs_weekdays.png')
 par(mfcol = c(2, 1))
 plot(meanStepsWeekday[, 2], meanStepsWeekday[, 3], type = "l", main = "Weekadays: average number of steps during the day", 
     xlab = "Time", ylab = "Steps per 5 min. intervals")
 plot(meanStepsWeekend[, 2], meanStepsWeekend[, 3], type = "l", main = "Weekend", 
     xlab = "Time", ylab = "Steps per 5 min. intervals")
-par(mfcol = c(1, 1))
-dev.off()
 ```
 
-```
-## pdf 
-##   2
+![plot of chunk weekdays vs. weekend](figure/weekdays_vs__weekend.png) 
+
+```r
+par(mfcol = c(1, 1))
+# dev.off()
 ```
 
